@@ -1,0 +1,23 @@
+let testRoot = fm.temporaryDirectory.appendingPathComponent("DaveBackupTests-" + UUID().uuidString)
+try fm.createDirectory(at: testRoot, withIntermediateDirectories: true)
+defer { try? fm.removeItem(at: testRoot) }
+let save = testRoot.appendingPathComponent("save")
+try fm.createDirectory(at: save, withIntermediateDirectories: true)
+let source = save.appendingPathComponent("GameSave_00_GD.sav")
+try Data("original progress".utf8).write(to: source)
+let root = testRoot.appendingPathComponent("custom-backups")
+let first = try createSnapshot([save], at: root)
+try Data("next progress".utf8).write(to: source)
+let second = try createSnapshot([save], at: root)
+assert(first != second)
+let firstData = try Data(contentsOf: first.appendingPathComponent("0-save/GameSave_00_GD.sav")); assert(firstData == Data("original progress".utf8))
+let secondData = try Data(contentsOf: second.appendingPathComponent("0-save/GameSave_00_GD.sav")); assert(secondData == Data("next progress".utf8))
+assert(fm.fileExists(atPath: first.appendingPathComponent("原始路径.txt").path))
+print("PASS: custom directory, unique timestamp snapshots, prior history retained, exact backup bytes")
+do { try validateBackupRoot(save.appendingPathComponent("backup"), targets: [save]); fatalError("nested backup accepted") } catch { print("PASS: backup inside save directory rejected") }
+let blocked = testRoot.appendingPathComponent("not-a-directory")
+try Data("file".utf8).write(to: blocked)
+do { _ = try createSnapshot([save], at: blocked); fatalError("invalid location accepted") } catch { print("PASS: unavailable backup location stops operation") }
+let after = try Data(contentsOf: source)
+assert(after == Data("next progress".utf8))
+print("PASS: save unchanged after backup failures")

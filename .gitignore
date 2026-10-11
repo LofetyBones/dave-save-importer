@@ -1,0 +1,9 @@
+.DS_Store
+*.app/
+build/
+dist/
+SData/
+*.sav
+*.zip
+Backups/
+verify.py

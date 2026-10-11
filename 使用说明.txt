@@ -1,0 +1,25 @@
+潜水员戴夫存档导入工具 v1.1（Apple Silicon Mac，macOS 11+）
+
+1. 完全退出游戏。
+2. 打开“Dave Save Importer.app”。首次启动选择默认备份目录，或选择自定义文件夹；设置会自动记住。
+3. 将 SData.zip 拖入窗口，或点击“选择 ZIP 压缩包”。
+4. 如有多个账号，选择要替换的目标存档目录。
+5. 点击“导入并替换存档”，等待成功提示，再启动游戏检查载入进度。
+
+每次导入前都会自动备份并校验完整旧存档，备份失败时不会替换存档。点击“打开备份文件夹”可查看。
+可随时通过“设置备份位置…”更改目录，旧备份仍留在原位置。
+每份备份以北京时间 yyyy-MM-dd_HH-mm-ss 加唯一编号命名，历史备份不会自动覆盖或删除。
+默认备份目录：~/Library/Application Support/DaveSaveImporter/Backups
+备份中的“原始路径.txt”按顺序记录目标路径，0-…为主要存档，后续目录为同步副本。
+恢复方法：先退出游戏，将对应备份文件夹的内容整体恢复到原始路径，替换当前目录内容。恢复前可自行保留当前目录副本。
+
+支持 ZIP，不支持 RAR/7z。压缩包可以含 SData 目录，也可以直接放主存档。
+导入 GameSave_数字_GD/PZ/UO.sav，GD/PZ 必须成对。忽略 m_、_o 和 _BackUp 旧副本。
+替换时清除旧 .sav 与 _BackUp，保留目录内其他文件，避免混用不同进度。
+会更新此电脑已存在的 NemirtingasSteamEmu/账号/1868140/remote 同步副本。
+工具按原始字节迁移，不解密或转换存档版本；不同游戏版本的读取兼容性须在游戏中确认。
+如果游戏使用 Steam 云同步，应避免旧云存档覆盖导入结果。
+
+源码：Sources/main.swift。验证脚本：verify.py。
+编译：xcrun swiftc Sources/main.swift -o 'Dave Save Importer.app/Contents/MacOS/DaveSaveImporter' -framework Cocoa -O
+本工具无第三方运行时依赖；使用 macOS 自带 unzip。已本地签名，未经过 Apple 公证。
